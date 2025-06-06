@@ -88,20 +88,27 @@
       const result = {
         TemplateName: templateName,
         TemplateId: templateId,
-        ActionId: actionId,
-        Textfield: {}
+        actionId: actionId
       };
 
-      // Helper function to process fields and collect text fields
+      // Helper function to process fields and group by category
       const processFields = (fields) => {
         fields.forEach((field) => {
-          if (field.field_category === 'textfield') {
-            const label = field.field_label;
-            const value = field.default_value !== undefined && field.default_value !== '' 
-              ? field.default_value 
-              : '';
-            result.Textfield[label] = value;
+          const category = field.field_category;
+          // Capitalize category for output (e.g., 'textfield' -> 'Textfield')
+          const capitalizedCategory = category.charAt(0).toUpperCase() + category.slice(1);
+          const label = field.field_label;
+          const value = field.default_value !== undefined && field.default_value !== '' 
+            ? field.default_value 
+            : '';
+
+          // Initialize category object if it doesn't exist
+          if (!result[capitalizedCategory]) {
+            result[capitalizedCategory] = {};
           }
+
+          // Add field label and value to the category
+          result[capitalizedCategory][label] = value;
         });
       };
 
