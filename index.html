@@ -27,6 +27,10 @@
       border-radius: 4px;
       resize: vertical;
     }
+    .button-group {
+      display: flex;
+      gap: 10px;
+    }
     button {
       padding: 10px 20px;
       background-color: #007bff;
@@ -38,6 +42,9 @@
     }
     button:hover {
       background-color: #0056b3;
+    }
+    button#copyButton.copied {
+      background-color: #28a745;
     }
     pre {
       background-color: #f8f8f8;
@@ -57,7 +64,10 @@
     <h1>Zoho Sign Template JSON Converter</h1>
     <h2>Input JSON</h2>
     <textarea id="inputJson" placeholder="Paste your Zoho Sign template JSON here"></textarea>
-    <button onclick="convertJson()">Convert</button>
+    <div class="button-group">
+      <button onclick="convertJson()">Convert</button>
+      <button id="copyButton" onclick="copyOutputJson()">Copy Output JSON</button>
+    </div>
     <h2>Output JSON</h2>
     <pre id="outputJson">Output will appear here after clicking Convert</pre>
   </div>
@@ -110,6 +120,7 @@
     function convertJson() {
       const inputJson = document.getElementById('inputJson').value;
       const outputElement = document.getElementById('outputJson');
+      const copyButton = document.getElementById('copyButton');
 
       try {
         // Parse the input JSON
@@ -120,9 +131,32 @@
 
         // Display the formatted JSON
         outputElement.textContent = JSON.stringify(formattedJson, null, 2);
+
+        // Enable copy button
+        copyButton.disabled = false;
       } catch (error) {
         outputElement.textContent = 'Error: ' + error.message;
+        copyButton.disabled = true;
       }
+    }
+
+    function copyOutputJson() {
+      const outputElement = document.getElementById('outputJson');
+      const copyButton = document.getElementById('copyButton');
+      const textToCopy = outputElement.textContent;
+
+      // Use Clipboard API to copy text
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        // Provide visual feedback
+        copyButton.textContent = 'Copied!';
+        copyButton.classList.add('copied');
+        setTimeout(() => {
+          copyButton.textContent = 'Copy Output JSON';
+          copyButton.classList.remove('copied');
+        }, 2000);
+      }).catch((err) => {
+        alert('Failed to copy: ' + err.message);
+      });
     }
   </script>
 </body>
