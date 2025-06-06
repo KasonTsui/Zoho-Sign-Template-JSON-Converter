@@ -79,28 +79,29 @@
         throw new Error('Invalid Zoho Sign template JSON structure');
       }
 
-      // Extract template name
+      // Extract template name, template ID, and action ID
       const templateName = jsonData.templates.template_name;
+      const templateId = jsonData.templates.template_id;
+      const actionId = jsonData.templates.actions[0]?.action_id || '';
 
       // Initialize the result object
       const result = {
-        [templateName]: {}
+        TemplateName: templateName,
+        TemplateId: templateId,
+        ActionId: actionId,
+        Textfield: {}
       };
 
-      // Helper function to process fields and group by category
+      // Helper function to process fields and collect text fields
       const processFields = (fields) => {
         fields.forEach((field) => {
-          const category = field.field_category;
-          const label = field.field_label;
-          const type = field.field_type_name;
-
-          // Initialize category if it doesn't exist
-          if (!result[templateName][category]) {
-            result[templateName][category] = {};
+          if (field.field_category === 'textfield') {
+            const label = field.field_label;
+            const value = field.default_value !== undefined && field.default_value !== '' 
+              ? field.default_value 
+              : '';
+            result.Textfield[label] = value;
           }
-
-          // Add field label and type to the category
-          result[templateName][category][label] = type;
         });
       };
 
