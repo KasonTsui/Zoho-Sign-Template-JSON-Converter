@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,11 +13,14 @@
       margin-left: auto;
       margin-right: auto;
     }
+
     .container {
+      padding: 40px;
       display: flex;
       flex-direction: column;
       gap: 20px;
     }
+
     textarea {
       width: 100%;
       height: 300px;
@@ -27,10 +31,12 @@
       border-radius: 4px;
       resize: vertical;
     }
+
     .button-group {
       display: flex;
       gap: 10px;
     }
+
     button {
       padding: 10px 20px;
       background-color: #007bff;
@@ -40,12 +46,15 @@
       cursor: pointer;
       font-size: 16px;
     }
+
     button:hover {
       background-color: #0056b3;
     }
+
     button#copyButton.copied {
       background-color: #28a745;
     }
+
     pre {
       background-color: #f8f8f8;
       padding: 15px;
@@ -54,11 +63,14 @@
       overflow-x: auto;
       font-size: 14px;
     }
-    h1, h2 {
+
+    h1,
+    h2 {
       margin: 0 0 10px;
     }
   </style>
 </head>
+
 <body>
   <div class="container">
     <h1>Zoho Sign Template JSON Converter</h1>
@@ -98,8 +110,8 @@
           // Capitalize category for output (e.g., 'textfield' -> 'Textfield')
           const capitalizedCategory = category.charAt(0).toUpperCase() + category.slice(1);
           const label = field.field_label;
-          const value = field.default_value !== undefined && field.default_value !== '' 
-            ? field.default_value 
+          const value = field.default_value !== undefined && field.default_value !== ''
+            ? field.default_value
             : '';
 
           // Initialize category object if it doesn't exist
@@ -168,4 +180,5 @@
     }
   </script>
 </body>
+
 </html>
