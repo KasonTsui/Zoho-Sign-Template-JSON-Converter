@@ -1,139 +1,144 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Zoho Sign Template JSON Converter</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      max-width: 1200px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    .container {
-      padding: 40px;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    textarea {
-      width: 100%;
-      height: 300px;
-      padding: 10px;
-      font-family: monospace;
-      font-size: 14px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      resize: vertical;
-    }
-
-    .button-group {
-      display: flex;
-      gap: 10px;
-    }
-
-    button {
-      padding: 10px 20px;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 16px;
-    }
-
-    button:hover {
-      background-color: #0056b3;
-    }
-
-    button#copyButton.copied {
-      background-color: #28a745;
-    }
-
-    pre {
-      background-color: #f8f8f8;
-      padding: 15px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      overflow-x: auto;
-      font-size: 14px;
-    }
-
-    h1,
-    h2 {
-      margin: 0 0 10px;
-    }
-  </style>
+  <title>Zoho Sign Tools</title>
+  <link rel="stylesheet" href="./tailwind.min.css">
 </head>
-
-<body>
-  <div class="container">
-    <h1>Zoho Sign Template JSON Converter</h1>
-    <h2>Input JSON</h2>
-    <textarea id="inputJson" placeholder="Paste your Zoho Sign template JSON here"></textarea>
-    <div class="button-group">
-      <button onclick="convertJson()">Convert</button>
-      <button id="copyButton" onclick="copyOutputJson()">Copy Output JSON</button>
+<body class="bg-gray-100">
+  <div class="container mx-auto p-4">
+    <div class="tabs flex space-x-4 mb-4">
+      <button class="tab-button px-4 py-2 bg-blue-500 text-white rounded" data-tab="tab-template">Zoho Sign Template JSON Converter</button>
+      <button class="tab-button px-4 py-2 bg-gray-200 text-gray-700 rounded" data-tab="tab-payload">Zoho Sign Webhook Payload Converter</button>
     </div>
-    <h2>Output JSON</h2>
-    <pre id="outputJson">Output will appear here after clicking Convert</pre>
+    <div class="tab-content active" id="tab-template">
+      <h1 class="text-2xl font-bold mb-4">Zoho Sign Template JSON Converter</h1>
+      <h2 class="text-xl mb-2">Input JSON</h2>
+      <textarea id="inputJson" class="w-full h-64 p-2 font-mono text-sm border border-gray-300 rounded" placeholder="Paste your Zoho Sign template JSON here"></textarea>
+      <div class="button-group flex space-x-4 mt-2">
+        <button onclick="convertJson()" class="px-4 py-2 bg-blue-500 text-white rounded">Convert</button>
+        <button id="copyButton" onclick="copyOutputJson()" class="px-4 py-2 bg-green-500 text-white rounded">Copy Output JSON</button>
+      </div>
+      <h2 class="text-xl mt-4 mb-2">Output JSON</h2>
+      <pre id="outputJson" class="bg-gray-50 p-4 border border-gray-300 rounded text-sm">Output will appear here after clicking Convert</pre>
+    </div>
+    <div class="tab-content hidden" id="tab-payload">
+      <h1 class="text-2xl font-bold mb-4">Zoho Sign Webhook Payload Converter</h1>
+      <div class="json-input mb-4">
+        <h2 class="text-xl mb-2">JSON Payload</h2>
+        <textarea id="payloadJson" class="w-full h-64 p-2 font-mono text-sm border border-gray-300 rounded" placeholder="Paste your payload JSON here"></textarea>
+        <div class="button-group flex space-x-4 mt-2">
+          <button onclick="loadPayload()" class="px-4 py-2 bg-blue-500 text-white rounded">Load to Fields</button>
+          <button onclick="updateJsonFromFields()" class="px-4 py-2 bg-blue-500 text-white rounded">Update JSON from Fields</button>
+          <button id="copyPayloadButton" onclick="copyPayloadJson()" class="px-4 py-2 bg-green-500 text-white rounded">Copy Payload JSON</button>
+        </div>
+      </div>
+      <div class="fields-input">
+        <h2 class="text-xl mb-2">Input Fields</h2>
+        <form id="payloadForm" class="space-y-4">
+          <div class="bg-white p-4 rounded shadow">
+            <h3 class="text-lg font-semibold mb-2">Notifications</h3>
+            <label class="block mb-2">Performed by Email: <input type="text" data-path="notifications.performed_by_email" class="w-full p-2 border border-gray-300 rounded"></label>
+            <label class="block mb-2">Performed by Name: <input type="text" data-path="notifications.performed_by_name" class="w-full p-2 border border-gray-300 rounded"></label>
+            <label class="block mb-2">Performed At: <input type="number" data-path="notifications.performed_at" class="w-full p-2 border border-gray-300 rounded"></label>
+            <label class="block mb-2">Reason: <input type="text" data-path="notifications.reason" class="w-full p-2 border border-gray-300 rounded"></label>
+            <label class="block mb-2">Activity: <input type="text" data-path="notifications.activity" class="w-full p-2 border border-gray-300 rounded"></label>
+            <label class="block mb-2">Operation Type:
+              <select data-path="notifications.operation_type" class="w-full p-2 border border-gray-300 rounded">
+                <option value="RequestSubmitted">RequestSubmitted</option>
+                <option value="RequestViewed">RequestViewed</option>
+                <option value="RequestSigningSuccess">RequestSigningSuccess</option>
+                <option value="RequestCompleted">RequestCompleted</option>
+                <option value="RequestRejected">RequestRejected</option>
+                <option value="RequestRecalled">RequestRecalled</option>
+                <option value="RequestForwarded">RequestForwarded</option>
+                <option value="RequestExpired">RequestExpired</option>
+              </select>
+            </label>
+            <label class="block mb-2">Action ID: <input type="number" data-path="notifications.action_id" class="w-full p-2 border border-gray-300 rounded"></label>
+            <label class="block mb-2">IP Address: <input type="text" data-path="notifications.ip_address" class="w-full p-2 border border-gray-300 rounded"></label>
+          </div>
+          <div class="bg-white p-4 rounded shadow">
+            <h3 class="text-lg font-semibold mb-2">Requests</h3>
+            <label class="block mb-2">Request Status: <input type="text" data-path="requests.request_status" class="w-full p-2 border border-gray-300 rounded"></label>
+            <label class="block mb-2">Owner Email: <input type="text" data-path="requests.owner_email" class="w-full p-2 border border-gray-300 rounded"></label>
+            <label class="block mb-2">Request Name: <input type="text" data-path="requests.request_name" class="w-full p-2 border border-gray-300 rounded"></label>
+            <label class="block mb-2">Request ID: <input type="number" data-path="requests.request_id" class="w-full p-2 border border-gray-300 rounded"></label>
+            <label class="block mb-2">Owner ID: <input type="number" data-path="requests.owner_id" class="w-full p-2 border border-gray-300 rounded"></label>
+            <label class="block mb-2">Self Sign: <input type="text" data-path="requests.self_sign" class="w-full p-2 border border-gray-300 rounded"></label>
+            <label class="block mb-2">Modified Time: <input type="number" data-path="requests.modified_time" class="w-full p-2 border border-gray-300 rounded"></label>
+            <label class="block mb-2">Action Time: <input type="number" data-path="requests.action_time" class="w-full p-2 border border-gray-300 rounded"></label>
+            <label class="block mb-2">Is Deleted: <input type="text" data-path="requests.is_deleted" class="w-full p-2 border border-gray-300 rounded"></label>
+            <label class="block mb-2">Is Sequential: <input type="text" data-path="requests.is_sequential" class="w-full p-2 border border-gray-300 rounded"></label>
+            <label class="block mb-2">Org ID: <input type="number" data-path="requests.org_id" class="w-full p-2 border border-gray-300 rounded"></label>
+            <label class="block mb-2">Owner First Name: <input type="text" data-path="requests.owner_first_name" class="w-full p-2 border border-gray-300 rounded"></label>
+            <label class="block mb-2">Owner Last Name: <input type="text" data-path="requests.owner_last_name" class="w-full p-2 border border-gray-300 rounded"></label>
+            <label class="block mb-2">Request Type Name: <input type="text" data-path="requests.request_type_name" class="w-full p-2 border border-gray-300 rounded"></label>
+            <label class="block mb-2">Request Type ID: <input type="number" data-path="requests.request_type_id" class="w-full p-2 border border-gray-300 rounded"></label>
+            <label class="block mb-2">ZSDocument ID: <input type="number" data-path="requests.zsdocumentid" class="w-full p-2 border border-gray-300 rounded"></label>
+            <div class="mt-4">
+              <h4 class="text-md font-semibold mb-2">Document</h4>
+              <label class="block mb-2">Document Name: <input type="text" data-path="requests.document_ids[0].document_name" class="w-full p-2 border border-gray-300 rounded"></label>
+              <label class="block mb-2">Document ID: <input type="number" data-path="requests.document_ids[0].document_id" class="w-full p-2 border border-gray-300 rounded"></label>
+              <label class="block mb-2">Document Size: <input type="number" data-path="requests.document_ids[0].document_size" class="w-full p-2 border border-gray-300 rounded"></label>
+              <label class="block mb-2">Document Order: <input type="number" data-path="requests.document_ids[0].document_order" class="w-full p-2 border border-gray-300 rounded"></label>
+              <label class="block mb-2">Is NOM151 Present: <input type="text" data-path="requests.document_ids[0].is_nom151_present" class="w-full p-2 border border-gray-300 rounded"></label>
+              <label class="block mb-2">Is Editable: <input type="text" data-path="requests.document_ids[0].is_editable" class="w-full p-2 border border-gray-300 rounded"></label>
+              <label class="block mb-2">Total Pages: <input type="number" data-path="requests.document_ids[0].total_pages" class="w-full p-2 border border-gray-300 rounded"></label>
+            </div>
+            <div class="mt-4">
+              <h4 class="text-md font-semibold mb-2">Action</h4>
+              <label class="block mb-2">Verify Recipient: <input type="text" data-path="requests.actions[0].verify_recipient" class="w-full p-2 border border-gray-300 rounded"></label>
+              <label class="block mb-2">Action Type: <input type="text" data-path="requests.actions[0].action_type" class="w-full p-2 border border-gray-300 rounded"></label>
+              <label class="block mb-2">Action ID: <input type="number" data-path="requests.actions[0].action_id" class="w-full p-2 border border-gray-300 rounded"></label>
+              <label class="block mb-2">Is Revoked: <input type="text" data-path="requests.actions[0].is_revoked" class="w-full p-2 border border-gray-300 rounded"></label>
+              <label class="block mb-2">Recipient Email: <input type="text" data-path="requests.actions[0].recipient_email" class="w-full p-2 border border-gray-300 rounded"></label>
+              <label class="block mb-2">Is Embedded: <input type="text" data-path="requests.actions[0].is_embedded" class="w-full p-2 border border-gray-300 rounded"></label>
+              <label class="block mb-2">Signing Order: <input type="number" data-path="requests.actions[0].signing_order" class="w-full p-2 border border-gray-300 rounded"></label>
+              <label class="block mb-2">Recipient Name: <input type="text" data-path="requests.actions[0].recipient_name" class="w-full p-2 border border-gray-300 rounded"></label>
+              <label class="block mb-2">Allow Signing: <input type="text" data-path="requests.actions[0].allow_signing" class="w-full p-2 border border-gray-300 rounded"></label>
+              <label class="block mb-2">Recipient Phone Number: <input type="text" data-path="requests.actions[0].recipient_phonenumber" class="w-full p-2 border border-gray-300 rounded"></label>
+              <label class="block mb-2">Recipient Country Code: <input type="text" data-path="requests.actions[0].recipient_countrycode" class="w-full p-2 border border-gray-300 rounded"></label>
+              <label class="block mb-2">Action Status: <input type="text" data-path="requests.actions[0].action_status" class="w-full p-2 border border-gray-300 rounded"></label>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 
   <script>
     function extractFieldsFromZohoTemplate(jsonData) {
-      // Validate JSON structure
       if (!jsonData.templates || !jsonData.templates.document_fields || !jsonData.templates.actions) {
         throw new Error('Invalid Zoho Sign template JSON structure');
       }
-
-      // Extract template name, template ID, and action ID
       const templateName = jsonData.templates.template_name;
       const templateId = jsonData.templates.template_id;
       const actionId = jsonData.templates.actions[0]?.action_id || '';
-
-      // Initialize the result object
       const result = {
         TemplateName: templateName,
         TemplateId: templateId,
         actionId: actionId
       };
-
-      // Helper function to process fields and group by category
       const processFields = (fields) => {
         fields.forEach((field) => {
           const category = field.field_category;
-          // Capitalize category for output (e.g., 'textfield' -> 'Textfield')
           const capitalizedCategory = category.charAt(0).toUpperCase() + category.slice(1);
           const label = field.field_label;
-          const value = field.default_value !== undefined && field.default_value !== ''
-            ? field.default_value
-            : '';
-
-          // Initialize category object if it doesn't exist
+          const value = field.default_value !== undefined && field.default_value !== '' ? field.default_value : '';
           if (!result[capitalizedCategory]) {
             result[capitalizedCategory] = {};
           }
-
-          // Add field label and value to the category
           result[capitalizedCategory][label] = value;
         });
       };
-
-      // Process fields from document_fields
       jsonData.templates.document_fields.forEach((doc) => {
         processFields(doc.fields);
       });
-
-      // Process fields from actions
       jsonData.templates.actions.forEach((action) => {
         processFields(action.fields);
       });
-
       return result;
     }
 
@@ -141,18 +146,10 @@
       const inputJson = document.getElementById('inputJson').value;
       const outputElement = document.getElementById('outputJson');
       const copyButton = document.getElementById('copyButton');
-
       try {
-        // Parse the input JSON
         const jsonData = JSON.parse(inputJson);
-
-        // Process the JSON to extract fields
         const formattedJson = extractFieldsFromZohoTemplate(jsonData);
-
-        // Display the formatted JSON
         outputElement.textContent = JSON.stringify(formattedJson, null, 2);
-
-        // Enable copy button
         copyButton.disabled = false;
       } catch (error) {
         outputElement.textContent = 'Error: ' + error.message;
@@ -164,21 +161,137 @@
       const outputElement = document.getElementById('outputJson');
       const copyButton = document.getElementById('copyButton');
       const textToCopy = outputElement.textContent;
-
-      // Use Clipboard API to copy text
       navigator.clipboard.writeText(textToCopy).then(() => {
-        // Provide visual feedback
         copyButton.textContent = 'Copied!';
-        copyButton.classList.add('copied');
         setTimeout(() => {
           copyButton.textContent = 'Copy Output JSON';
-          copyButton.classList.remove('copied');
         }, 2000);
       }).catch((err) => {
         alert('Failed to copy: ' + err.message);
       });
     }
+
+    function getValueByPath(obj, path) {
+      const segments = path.split('.');
+      let current = obj;
+      for (let segment of segments) {
+        if (segment.includes('[')) {
+          const [key, indexStr] = segment.split('[');
+          const index = parseInt(indexStr.replace(']', ''), 10);
+          if (!current[key] || !current[key][index]) {
+            return undefined;
+          }
+          current = current[key][index];
+        } else {
+          if (!current[segment]) {
+            return undefined;
+          }
+          current = current[segment];
+        }
+      }
+      return current;
+    }
+
+    function setValueByPath(obj, path, value) {
+      const segments = path.split('.');
+      let current = obj;
+      for (let i = 0; i < segments.length - 1; i++) {
+        let segment = segments[i];
+        if (segment.includes('[')) {
+          const [key, indexStr] = segment.split('[');
+          const index = parseInt(indexStr.replace(']', ''), 10);
+          if (!current[key]) {
+            current[key] = [];
+          }
+          if (!current[key][index]) {
+            current[key][index] = {};
+          }
+          current = current[key][index];
+        } else {
+          if (!current[segment]) {
+            current[segment] = {};
+          }
+          current = current[segment];
+        }
+      }
+      const lastSegment = segments[segments.length - 1];
+      if (lastSegment.includes('[')) {
+        const [key, indexStr] = lastSegment.split('[');
+        const index = parseInt(indexStr.replace(']', ''), 10);
+        if (!current[key]) {
+          current[key] = [];
+        }
+        current[key][index] = value;
+      } else {
+        current[lastSegment] = value;
+      }
+    }
+
+    function loadPayload() {
+      const jsonText = document.getElementById('payloadJson').value;
+      try {
+        const json = JSON.parse(jsonText);
+        document.querySelectorAll('#payloadForm input, #payloadForm select').forEach(element => {
+          const path = element.getAttribute('data-path');
+          const value = getValueByPath(json, path);
+          if (element.tagName === 'SELECT') {
+            element.value = value || '';
+          } else {
+            element.value = value !== undefined ? value : '';
+          }
+        });
+      } catch (error) {
+        alert('Invalid JSON: ' + error.message);
+      }
+    }
+
+    function updateJsonFromFields() {
+      const json = {};
+      document.querySelectorAll('#payloadForm input, #payloadForm select').forEach(element => {
+        const path = element.getAttribute('data-path');
+        let value = element.value;
+        if (path.endsWith('_id') || path.endsWith('_time') || path.endsWith('_size') || path.endsWith('_order') || path.endsWith('_pages') || path === 'notifications.performed_at') {
+          value = value === '' ? 0 : parseInt(value, 10);
+          if (isNaN(value)) value = 0;
+        } else if (path.includes('is_') || path === 'requests.self_sign' || path === 'requests.actions[0].verify_recipient' || path === 'requests.actions[0].allow_signing' || path === 'requests.actions[0].is_revoked' || path === 'requests.actions[0].is_embedded') {
+          value = value.toLowerCase() === 'true' || value === '1';
+        }
+        setValueByPath(json, path, value);
+      });
+      document.getElementById('payloadJson').value = JSON.stringify(json, null, 2);
+    }
+
+    function copyPayloadJson() {
+      const payloadJson = document.getElementById('payloadJson').value;
+      navigator.clipboard.writeText(payloadJson).then(() => {
+        const copyButton = document.getElementById('copyPayloadButton');
+        copyButton.textContent = 'Copied!';
+        setTimeout(() => {
+          copyButton.textContent = 'Copy Payload JSON';
+        }, 2000);
+      }).catch((err) => {
+        alert('Failed to copy: ' + err.message);
+      });
+    }
+
+    document.querySelectorAll('.tab-button').forEach(button => {
+      button.addEventListener('click', () => {
+        const tabId = button.getAttribute('data-tab');
+        document.querySelectorAll('.tab-content').forEach(content => {
+          content.classList.remove('active');
+          content.classList.add('hidden');
+        });
+        const activeTab = document.getElementById(tabId);
+        activeTab.classList.add('active');
+        activeTab.classList.remove('hidden');
+        document.querySelectorAll('.tab-button').forEach(btn => {
+          btn.classList.remove('bg-blue-500', 'text-white');
+          btn.classList.add('bg-gray-200', 'text-gray-700');
+        });
+        button.classList.remove('bg-gray-200', 'text-gray-700');
+        button.classList.add('bg-blue-500', 'text-white');
+      });
+    });
   </script>
 </body>
-
 </html>
